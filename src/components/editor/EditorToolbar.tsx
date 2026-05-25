@@ -90,22 +90,53 @@ export default function EditorToolbar() {
   }, [undo, redo, saveProject]);
 
   const handleExportScreenshot = async () => {
-    const phoneEl = document.querySelector('.phone-screen');
+    const phoneEl = document.getElementById('phone-preview-capture');
     if (!phoneEl) return;
 
     try {
+      // Resolve CSS vars before capturing
+      const resolveVars = (el: HTMLElement) => {
+        const computed = getComputedStyle(el);
+        const style = el.style;
+        for (const prop of ['color','backgroundColor','borderColor','fill','stroke']) {
+          const val = computed.getPropertyValue(prop);
+          if (val) style.setProperty(prop, val);
+        }
+        Array.from(el.children).forEach(c => resolveVars(c as HTMLElement));
+      };
+
+      const clone = phoneEl.cloneNode(true) as HTMLElement;
+      clone.style.position = 'fixed';
+      clone.style.left = '-9999px';
+      document.body.appendChild(clone);
+      resolveVars(clone);
+
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(phoneEl as HTMLElement, {
-        scale: 2,
+      const canvas = await html2canvas(clone, {
+        scale: 3,
         backgroundColor: null,
         useCORS: true,
+        logging: false,
+        windowWidth: 380,
+        windowHeight: 760,
       });
+      document.body.removeChild(clone);
+
       const link = document.createElement('a');
       link.download = `chatforge-${platform}-${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (e) {
       console.error('Export failed:', e);
+      // Fallback: try direct capture
+      try {
+        const html2canvas = (await import('html2canvas')).default;
+        const canvas = await html2canvas(phoneEl, { scale: 2, backgroundColor: '#000', useCORS: true });
+        const link = document.createElement('a');
+        link.download = `chatforge-${platform}-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e2) { console.error('Fallback failed:', e2); }
     }
   };
 

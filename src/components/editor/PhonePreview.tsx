@@ -4,6 +4,7 @@ import { useEditorStore } from '@/stores/editorStore';
 import { getPlatformConfig } from '@/lib/platforms';
 import { Check, CheckCheck, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 
 export default function PhonePreview() {
   const { messages, contacts, activeContactId, platform, phoneSettings, isTyping } = useEditorStore();
@@ -27,10 +28,13 @@ export default function PhonePreview() {
     }
   };
 
+  // Stable waveform heights so they don't re-render randomly
+  const waveHeights = useMemo(() => Array.from({ length: 28 }, () => Math.random() * 14 + 3), []);
+
   return (
     <div className="flex items-center justify-center p-8">
-      <div className="phone-frame animate-float" style={{ animationDuration: '8s' }}>
-        <div className="phone-screen" style={{ background: config.colors.background }}>
+      <div className="phone-frame">
+        <div id="phone-preview-capture" className="phone-screen" style={{ background: config.colors.background }}>
           {/* Dynamic Island */}
           <div className="phone-dynamic-island" />
 
@@ -255,27 +259,24 @@ export default function PhonePreview() {
 
                     {/* Voice Note */}
                     {msg.type === 'voice' && (
-                      <div className="flex items-center gap-2 min-w-[160px]">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: config.colors.accent }}>
-                          <span className="text-white text-[10px]">▶</span>
+                      <div className="flex items-center gap-2 min-w-[180px]">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: platform === 'whatsapp' ? (isSent ? '#b3d9d2' : '#8696A0') : config.colors.accent }}>
+                          <svg width="10" height="12" viewBox="0 0 10 12" fill="white"><path d="M1 1v10l8-5z"/></svg>
                         </div>
                         <div className="flex-1">
-                          <div className="flex gap-[1px] items-end h-4">
-                            {Array.from({ length: 20 }).map((_, i) => (
-                              <div
-                                key={i}
-                                className="w-[2px] rounded-full"
-                                style={{
-                                  height: `${Math.random() * 12 + 4}px`,
-                                  background: config.colors.accent,
-                                  opacity: 0.6,
-                                }}
-                              />
+                          <div className="flex gap-[1.5px] items-center h-5">
+                            {waveHeights.map((h, i) => (
+                              <div key={i} className="rounded-full" style={{ width: '2.5px', height: `${h}px`, background: isSent ? 'rgba(255,255,255,0.5)' : (config.colors.timestamp), opacity: i < 14 ? 1 : 0.4 }} />
                             ))}
                           </div>
-                          <span className="text-[10px]" style={{ color: config.colors.timestamp }}>
-                            {msg.voiceDuration ? `0:${String(msg.voiceDuration).padStart(2, '0')}` : '0:15'}
-                          </span>
+                          <div className="flex items-center justify-between mt-0.5">
+                            <span className="text-[10px]" style={{ color: isSent ? 'rgba(255,255,255,0.5)' : config.colors.timestamp }}>
+                              {msg.voiceDuration ? `0:${String(msg.voiceDuration).padStart(2, '0')}` : '0:15'}
+                            </span>
+                            {platform === 'whatsapp' && (
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isSent ? 'rgba(255,255,255,0.4)' : '#8696A0'} strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
@@ -364,39 +365,58 @@ export default function PhonePreview() {
           </div>
 
           {/* Input Bar */}
-          <div
-            className="absolute bottom-0 left-0 right-0 px-2 py-2 flex items-center gap-2"
-            style={{ background: config.colors.inputBar }}
-          >
-            {platform === 'whatsapp' && (
-              <>
-                <span className="text-lg">😊</span>
-                <div className="flex-1 rounded-full px-4 py-[7px] text-[13px]" style={{ background: config.colors.receivedBubble, color: config.colors.timestamp }}>
-                  Type a message
-                </div>
-                <span className="text-lg">📎</span>
-                <span className="text-lg">🎤</span>
-              </>
-            )}
-            {platform === 'imessage' && (
-              <>
-                <span className="text-lg">📷</span>
-                <div className="flex-1 rounded-full px-4 py-[7px] text-[13px] border" style={{ borderColor: `${config.colors.headerText}20`, color: config.colors.timestamp }}>
-                  iMessage
-                </div>
-                <span className="text-lg">🎤</span>
-              </>
-            )}
-            {!['whatsapp', 'imessage'].includes(platform) && (
-              <>
-                <span className="text-lg">📷</span>
-                <div className="flex-1 rounded-full px-4 py-[7px] text-[13px]" style={{ background: `${config.colors.receivedBubble}`, color: config.colors.timestamp }}>
-                  Message...
-                </div>
-                <span className="text-lg">🎤</span>
-              </>
-            )}
-          </div>
+          {platform === 'whatsapp' && (
+            <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1.5 flex items-end gap-1" style={{ background: '#1F2C34' }}>
+              <div className="flex-1 flex items-center gap-2 rounded-[22px] px-3 py-2" style={{ background: '#2A3942' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8696A0" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                <span className="flex-1 text-[14px] text-[#8696A0]">Message</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8696A0" strokeWidth="1.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8696A0" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              </div>
+              <div className="w-[42px] h-[42px] rounded-full flex items-center justify-center" style={{ background: '#00A884' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="white" strokeWidth="2"/></svg>
+              </div>
+            </div>
+          )}
+          {platform === 'imessage' && (
+            <div className="absolute bottom-0 left-0 right-0 px-2 py-2 flex items-center gap-2" style={{ background: '#1C1C1E' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="1.5"><path d="M12 5v14M5 12h14"/></svg>
+              <div className="flex-1 rounded-full px-4 py-[7px] text-[14px] border" style={{ borderColor: '#3A3A3C', color: '#8E8E93' }}>iMessage</div>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+            </div>
+          )}
+          {platform === 'instagram' && (
+            <div className="absolute bottom-0 left-0 right-0 px-3 py-2.5 flex items-center gap-3" style={{ background: '#000' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <div className="flex-1 rounded-full px-4 py-[7px] text-[14px] border" style={{ borderColor: '#363636', color: '#8E8E93' }}>Message...</div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            </div>
+          )}
+          {platform === 'telegram' && (
+            <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5 flex items-center gap-2" style={{ background: '#17212B' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6C7883" strokeWidth="1.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              <div className="flex-1 rounded-lg px-3 py-2 text-[14px]" style={{ background: '#242F3D', color: '#6C7883' }}>Message</div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6C7883" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: '#5CA0D3' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="white" strokeWidth="2"/></svg>
+              </div>
+            </div>
+          )}
+          {platform === 'discord' && (
+            <div className="absolute bottom-0 left-0 right-0 px-3 py-2 flex items-center gap-2" style={{ background: '#383A40' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B5BAC1" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              <div className="flex-1 rounded-lg px-3 py-2 text-[14px]" style={{ background: '#404249', color: '#6D6F78' }}>Message #{'{'}channel{'}'}</div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B5BAC1" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+          )}
+          {!['whatsapp','imessage','instagram','telegram','discord'].includes(platform) && (
+            <div className="absolute bottom-0 left-0 right-0 px-3 py-2 flex items-center gap-2" style={{ background: config.colors.inputBar }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={config.colors.timestamp} strokeWidth="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <div className="flex-1 rounded-full px-4 py-[7px] text-[14px]" style={{ background: config.colors.receivedBubble, color: config.colors.timestamp }}>Message...</div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={config.colors.timestamp} strokeWidth="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+            </div>
+          )}
         </div>
       </div>
     </div>
