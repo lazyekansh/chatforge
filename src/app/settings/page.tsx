@@ -39,7 +39,7 @@ export default function SettingsPage() {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <span className="text-lg font-bold">
-                Chat<span className="gradient-text">Forge</span>
+                Chat<span className="accent-text">Forge</span>
               </span>
             </Link>
             <div className="h-5 w-px bg-[var(--border)]" />

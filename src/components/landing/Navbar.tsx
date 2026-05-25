@@ -29,81 +29,71 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'glass py-3'
+            ? 'bg-[var(--bg-secondary)]/95 backdrop-blur-sm border-b border-[var(--border)] py-3'
             : 'bg-transparent py-5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="relative w-9 h-9 rounded-xl bg-[var(--accent)] flex items-center justify-center shadow-lg group-hover:shadow-[var(--shadow-glow)] transition-shadow duration-300">
-              <Sparkles className="w-5 h-5 text-white" />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight">
-              Chat<span className="gradient-text">Forge</span>
+            <span className="text-lg font-bold tracking-tight">
+              Chat<span className="accent-text">Forge</span>
             </span>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-200 rounded-lg hover:bg-[var(--bg-hover)]"
+                className="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg"
               >
                 {link.label}
               </a>
             ))}
           </div>
 
-          {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/dashboard" className="btn-ghost text-sm">
-              Log In
-            </Link>
+            <Link href="/dashboard" className="btn-ghost text-sm">Log In</Link>
             <Link href="/editor" className="btn-primary text-sm">
-              <Sparkles className="w-4 h-4" />
               Start Creating
             </Link>
           </div>
 
-          {/* Mobile Toggle */}
           <button
             onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-[var(--bg-hover)]"
           >
             {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-16 left-0 right-0 z-40 glass p-6 mx-4 rounded-2xl md:hidden"
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-16 left-4 right-4 z-40 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-4 md:hidden"
           >
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileOpen(false)}
-                  className="px-4 py-3 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-hover)]"
+                  className="px-4 py-3 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-hover)]"
                 >
                   {link.label}
                 </a>
               ))}
               <div className="border-t border-[var(--border)] my-2" />
               <Link href="/editor" className="btn-primary text-sm justify-center" onClick={() => setIsMobileOpen(false)}>
-                <Sparkles className="w-4 h-4" />
                 Start Creating
               </Link>
             </div>

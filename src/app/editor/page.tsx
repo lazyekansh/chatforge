@@ -22,7 +22,7 @@ export default function EditorPage() {
         {!leftOpen && (
           <button
             onClick={() => setLeftOpen(true)}
-            className="absolute left-2 top-2 z-20 p-2 rounded-lg glass text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
+            className="absolute left-2 top-2 z-20 p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
           >
             <PanelLeft className="w-4 h-4" />
           </button>
@@ -58,7 +58,7 @@ export default function EditorPage() {
         {!rightOpen && (
           <button
             onClick={() => setRightOpen(true)}
-            className="absolute right-2 top-2 z-20 p-2 rounded-lg glass text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
+            className="absolute right-2 top-2 z-20 p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all"
           >
             <PanelRight className="w-4 h-4" />
           </button>

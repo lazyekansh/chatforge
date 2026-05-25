@@ -190,7 +190,7 @@ export default function TemplatesPage() {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <span className="text-lg font-bold">
-                Chat<span className="gradient-text">Forge</span>
+                Chat<span className="accent-text">Forge</span>
               </span>
             </Link>
             <div className="h-5 w-px bg-[var(--border)]" />
@@ -233,7 +233,7 @@ export default function TemplatesPage() {
               onClick={() => setActiveCategory(cat.id)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-[var(--accent)] text-white shadow-[var(--shadow-glow)]'
+                  ? 'bg-[var(--accent)] text-white'
                   : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--border-hover)]'
               }`}
             >

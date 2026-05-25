@@ -118,7 +118,7 @@ export default function EditorToolbar() {
             <Sparkles className="w-3.5 h-3.5 text-white" />
           </div>
           <span className="text-sm font-bold hidden sm:block">
-            Chat<span className="gradient-text">Forge</span>
+            Chat<span className="accent-text">Forge</span>
           </span>
         </Link>
 

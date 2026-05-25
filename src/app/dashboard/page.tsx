@@ -84,7 +84,7 @@ export default function DashboardPage() {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <span className="text-lg font-bold">
-                Chat<span className="gradient-text">Forge</span>
+                Chat<span className="accent-text">Forge</span>
               </span>
             </Link>
             <div className="h-5 w-px bg-[var(--border)]" />
@@ -153,13 +153,13 @@ export default function DashboardPage() {
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                     <button
                       onClick={() => duplicateProject(project.id)}
-                      className="p-1.5 rounded-lg glass text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      className="p-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => deleteProject(project.id)}
-                      className="p-1.5 rounded-lg glass text-[var(--text-secondary)] hover:text-red-400"
+                      className="p-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-red-400"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
